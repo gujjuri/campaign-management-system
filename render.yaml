@@ -1,0 +1,34 @@
+# Render Blueprint for Campaign Management System
+# This file allows one-click deployment to Render.com
+
+services:
+  # Backend Service
+  - type: web
+    name: campaign-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build && cd ../backend
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: EVOLUTION_API_URL
+        sync: false
+      - key: EVOLUTION_API_KEY
+        sync: false
+      - key: EVOLUTION_INSTANCE
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: campaign-backend
+          property: host
+    disk:
+      name: database
+      mountPath: /opt/render/project/src/backend
+      sizeGB: 1
